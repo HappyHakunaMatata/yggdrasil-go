@@ -16,20 +16,7 @@ then
 fi
 
 # Download the wix tools!
-if [ ! -d wixbin ];
-then
-  curl -LO https://wixtoolset.org/downloads/v3.14.0.3910/wix314-binaries.zip
-  if [ `md5sum wix314-binaries.zip | cut -f 1 -d " "` != "34f655cf108086838dd5a76d4318063b" ];
-  then
-    echo "wix package didn't match expected checksum"
-    exit 1
-  fi
-  mkdir -p wixbin
-  unzip -o wix314-binaries.zip -d wixbin || (
-    echo "failed to unzip WiX"
-    exit 1
-  )
-fi
+dotnet tool install --global wix --version 5.0.0
 
 # Build Yggdrasil!
 [ "${PKGARCH}" == "x64" ] && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 ./build
@@ -205,5 +192,5 @@ EOF
 # Generate the MSI
 CANDLEFLAGS="-nologo"
 LIGHTFLAGS="-nologo -spdb -sice:ICE71 -sice:ICE61"
-wixbin/candle $CANDLEFLAGS -out ${PKGNAME}-${PKGVERSION}-${PKGARCH}.wixobj -arch ${PKGARCH} wix.xml && \
-wixbin/light $LIGHTFLAGS -ext WixUtilExtension.dll -out ${PKGNAME}-${PKGVERSION}-${PKGARCH}.msi ${PKGNAME}-${PKGVERSION}-${PKGARCH}.wixobj
+candle $CANDLEFLAGS -out ${PKGNAME}-${PKGVERSION}-${PKGARCH}.wixobj -arch ${PKGARCH} wix.xml && \
+light $LIGHTFLAGS -ext WixUtilExtension.dll -out ${PKGNAME}-${PKGVERSION}-${PKGARCH}.msi ${PKGNAME}-${PKGVERSION}-${PKGARCH}.wixobj
