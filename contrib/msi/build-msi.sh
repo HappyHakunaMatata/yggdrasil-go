@@ -48,6 +48,11 @@ PKGVERSIONMS=$(echo $PKGVERSION | tr - .)
 if [ ! -d wintun ];
 then
   curl -o wintun.zip https://www.wintun.net/builds/wintun-0.14.1.zip
+  if [ `md5sum wintun.zip | cut -f 1 -d " "` != "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51" ];
+  then
+    echo "wintun package didn't match expected checksum"
+    exit 1
+  fi
   unzip wintun.zip
 fi
 if [ $PKGARCH = "x64" ]; then
@@ -88,7 +93,7 @@ cat > wix.xml << EOF
       Description="Yggdrasil Network Installer"
       Comments="Yggdrasil Network standalone router for Windows."
       Manufacturer="github.com/yggdrasil-network"
-      InstallerVersion="200"
+      InstallerVersion="500"
       InstallScope="perMachine"
       Languages="1033"
       Compressed="yes"
